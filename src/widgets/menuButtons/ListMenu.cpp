@@ -23,13 +23,19 @@ namespace kImageAnnotator {
 
 ListMenu::ListMenu(QWidget *parent) :
 	QMenu(parent),
-	mLayout(new QVBoxLayout(this)),
+	mContainer(new QWidget(this)),
+	mLayout(new QVBoxLayout(mContainer)),
+	mWidgetAction(new QWidgetAction(this)),
 	mListItemGroup(new ListItemGroup(this))
 {
-	setLayout(mLayout);
-
 	mLayout->setContentsMargins(0, 0, 0, 0);
 	mLayout->setSpacing(0);
+
+	// The items are added to the menu through a widget action. A layout that is set
+	// on the menu itself does not get the full height of the menu with Qt 6 on macOS,
+	// so the items were squeezed and cut off.
+	mWidgetAction->setDefaultWidget(mContainer);
+	addAction(mWidgetAction);
 
 	connect(mListItemGroup, &ListItemGroup::checkedItemChanged, this, &ListMenu::selectionChanged);
 }
@@ -41,7 +47,7 @@ ListMenu::~ListMenu()
 
 void ListMenu::addItem(const QIcon &icon, const QString &text, const QVariant &data)
 {
-	auto item = new ListMenuItem(icon, text, data, this);
+	auto item = new ListMenuItem(icon, text, data, mContainer);
 	mLayout->addWidget(item);
 	mListItemGroup->addItem(item);
 }
@@ -79,15 +85,21 @@ void ListMenu::setDataVisible(const QVariant &data, bool isVisible)
 	for(auto item : mListItemGroup->items()) {
 		if(item->data() == data){
 			item->setVisible(isVisible);
-			setMinimumSize(mLayout->minimumSize());
+			updateSize();
 			return;
 		}
 	}
 }
 
-QSize ListMenu::sizeHint() const
+/*
+ * The menu only recalculates the size of its actions when they change, so the
+ * widget action is added again after the visible items changed.
+ */
+void ListMenu::updateSize()
 {
-	return mLayout->sizeHint();
+	mContainer->adjustSize();
+	removeAction(mWidgetAction);
+	addAction(mWidgetAction);
 }
 
 } // namespace kImageAnnotator

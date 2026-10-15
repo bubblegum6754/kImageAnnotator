@@ -22,6 +22,7 @@
 
 #include <QMenu>
 #include <QVBoxLayout>
+#include <QWidgetAction>
 
 #include "src/widgets/menuButtons/ListMenuItem.h"
 #include "src/widgets/menuButtons/ListItemGroup.h"
@@ -42,14 +43,17 @@ public:
 	QIcon currentIcon() const;
 	QString currentText() const;
 	void setDataVisible(const QVariant &data, bool isVisible);
-	QSize sizeHint() const override;
 
 signals:
 	void selectionChanged();
 
 private:
+	QWidget *mContainer;
 	QVBoxLayout *mLayout;
+	QWidgetAction *mWidgetAction;
 	ListItemGroup *mListItemGroup;
+
+	void updateSize();
 };
 
 } // namespace kImageAnnotator

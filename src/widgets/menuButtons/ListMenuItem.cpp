@@ -78,7 +78,9 @@ void ListMenuItem::paintEvent(QPaintEvent *event)
 	QPainter painter(this);
 	QStyleOption styleOption;
 	styleOption.initFrom(this);
-	auto rect = event->rect().adjusted(0,0,-1,-1);
+	Q_UNUSED(event)
+	// The whole item, the rect of the event can be only the part that needs to be repainted
+	auto rect = this->rect().adjusted(0,0,-1,-1);
 
 	if(styleOption.state & QStyle::State_MouseOver)
 	{

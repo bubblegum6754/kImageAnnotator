@@ -42,7 +42,9 @@ void GridMenuButton::paintEvent(QPaintEvent *event)
 	QPainter painter(this);
 	QStyleOption styleOption;
 	styleOption.initFrom(this);
-	auto buttonRect = event->rect().adjusted(0, 0, -1, -1);
+	Q_UNUSED(event)
+	// The whole button, the rect of the event can be only the part that needs to be repainted
+	auto buttonRect = rect().adjusted(0, 0, -1, -1);
 	
 	if(styleOption.state & QStyle::State_MouseOver)
 	{
